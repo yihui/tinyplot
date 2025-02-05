@@ -894,7 +894,7 @@ tinyplot.default = function(
   #
   ## Global plot elements (legend and titles)
   #
-
+  
   # place and draw the legend
   has_legend = FALSE # simple indicator variable for later use
 
@@ -981,9 +981,28 @@ tinyplot.default = function(
     # Draw new plot
     plot.new()
   }
-
+  
   # Titles. Only draw these if add = FALSE
   if (isFALSE(add)) {
+    
+    ## test
+    if (isTRUE(.tpar[["dynmar"]])) {
+      omar = par("mar")
+      has_xlab = !is.null(xlab) && !is.na(xlab)
+      has_ylab = !is.null(ylab) && !is.na(ylab)
+      has_main = !is.null(main) && !is.na(main)
+      has_sub = !is.null(sub) && !is.na(sub)
+      # if (has_xlab) omar[1] = omar[1] + par("cex.axis")
+      # if (has_ylab) omar[2] = omar[2] + par("cex.axis")
+      # if (has_main) omar[3] = omar[3] + 1.3 + par("cex.main")
+      if (!has_xlab) omar[1] = omar[1] - par("cex.axis")
+      if (!has_ylab) omar[2] = omar[2] - par("cex.axis")
+      if (!has_main) omar[3] = omar[3] - par("cex.main")
+      if (!has_main && !has_sub && .tpar[["side.sub"]]==3) omar[3] = omar[3] - par("cex.sub")
+      par(mar = omar)
+    }
+    ## test end
+  
     # main title
     # Note that we include a special catch for the main title if legend is
     # "top!" (and main is specified in the first place).
@@ -1005,12 +1024,17 @@ tinyplot.default = function(
 
     if (isTRUE(adj_title)) {
       line_main = par("mar")[3] - opar[["mar"]][3] + 1.7 + 0.1
+    } else if (isTRUE(.tpar[["dynmar"]]) && !has_sub) {
+      line_main = 1.6
     } else {
       line_main = NULL
     }
 
     if (!is.null(sub)) {
       if (isTRUE(get_tpar("side.sub", 1) == 3)) {
+        omar = par("mar")
+        omar[3] = omar[3] + 1.2
+        par(mar = omar)
         if (is.null(line_main)) line_main = par("mgp")[3] + 1.7 - .1
         line_main = line_main + 1.2
       }
